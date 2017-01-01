@@ -1,14 +1,4 @@
-use <tube.scad>
-
-module top_arc_part(tubeDiameter, tubeWall, joinerLength, joinerWall, radius, angel) {
-  joinerDiameter = tubeDiameter - tubeWall * 2;
-
-  union_mirror([0, 1, 0])
-    union() {
-      arc_tube(tubeDiameter, tubeWall, radius, angel);
-      arc_joiner(joinerDiameter, joinerWall, joinerLength, radius, angel);
-    }
-}
+use <line-tube.scad>
 
 module union_mirror(vec) {
     union() {
@@ -18,7 +8,7 @@ module union_mirror(vec) {
 }
 
 
-module arc_tube(diameter, wall, radius, angel) {
+module arc_tube(diameter, wall, radius, angle) {
   outerDiameter = diameter;
   outerRadius = outerDiameter / 2;
 
@@ -39,14 +29,14 @@ module arc_tube(diameter, wall, radius, angel) {
     translate([-(radius + outerRadius), -(radius + outerRadius), -outerRadius])
       cube(size = [(radius + outerRadius) * 2, (radius + outerRadius), outerDiameter]);
 
-    rotate(angel)
+    rotate(angle)
       translate([(radius + outerRadius) / 2, 0, 0])
         cube(size = [(radius + outerRadius), (radius + outerRadius) * 2, outerDiameter], center = true);
   }
 }
 
 
-module arc_joiner(diameter, wall, length, radius, angel) {
+module arc_joiner(diameter, wall, length, radius, angle) {
   outerDiameter = diameter;
   outerRadius = outerDiameter / 2;
 
@@ -68,25 +58,17 @@ module arc_joiner(diameter, wall, length, radius, angel) {
     translate([-(radius + outerRadius), -(radius + outerRadius), -outerRadius])
       cube(size = [(radius + outerRadius) * 2, (radius + outerRadius), outerDiameter]);
 
-    rotate(180 + angel * 2)
+    rotate(180 + angle * 2)
       translate([(radius + outerRadius) / 2, 0, 0])
         cube(size = [(radius + outerRadius), (radius + outerRadius) * 2, outerDiameter], center=true);
 
-    rotate(angel)
+    rotate(angle)
       translate([(radius + outerRadius) / 2, 0, 0])
         cube(size = [(radius + outerRadius), (radius + outerRadius) * 2, outerDiameter], center = true);
   }
 
   // "Public" joiner part
-  rotate([-angel, 90, 0])
+  rotate([-angle, 90, 0])
     translate([0, radius, 0])
       tube(length, outerRadius, wall);
-}
-
-
-module tube(height, radius, wall, center = false) {
-  difference() {
-    cylinder(h=height, r=radius, center=center);
-    cylinder(h=height, r=radius-wall, center=center);
-  }
 }
